@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test'
-import { Product } from '../../src/product.page';
+import { Product } from '../../src/pages/product.page';
 import { Page } from '@playwright/test';
 
 test.describe('Product - display', async() => {
