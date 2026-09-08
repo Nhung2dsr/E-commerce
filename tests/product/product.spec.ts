@@ -101,7 +101,7 @@ test.describe('Product review hoạt động', async() =>{
 
         await test.step('Thực hiện viết review', async() =>{
             // Action
-            await productPage.writeReview(5,'Khóa học chất lượng', 'Phạm Nhung', 'nhung123@gmail.com')
+            await productPage.writeReview(5,'Khóa học chất lượng', 'Phạm Nhung', 'nhung1@gmail.com')
 
             // Verify thông tin review hiển thị trên trang sản phẩm với dòng text: "Your review is awaiting approval"
             await expect (productPage.reviewSuccess).toHaveText(testData.verifyText);
@@ -123,6 +123,8 @@ test.describe('Product review hoạt động', async() =>{
             const newProductPage = new Product(newPage);
 
             await newPage.goto('https://e-commerce-dev.betterbytesvn.com/product/fullstack-automation-qa-voi-playwright-typescript/');
+
+            await newProductPage.gotoReview();
 
             // Assertion
             await expect (newProductPage.noReviews).toBeVisible();
