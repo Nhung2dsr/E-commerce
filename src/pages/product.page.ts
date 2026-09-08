@@ -10,6 +10,16 @@ export class Product {
     describeProduct: Locator
     btnAddCart: Locator
     successMessage: Locator
+    tabReview: Locator
+    noReviews: Locator
+    yourRating: Locator
+    yourReview: Locator
+    name: Locator
+    email: Locator
+    checkboxSaveInfo: Locator
+    labelSaveInfo: Locator
+    reviewSuccess: Locator
+    submit: Locator
 
     constructor(page: Page){
         this.page = page;
@@ -21,11 +31,39 @@ export class Product {
         this.describeProduct = page.locator('//div[@class = "woocommerce-product-details__short-description"]');
         this.btnAddCart = page.locator('//button[@name = "add-to-cart"]');
         this.successMessage = page.locator('//div[@class = "woocommerce-message"]');
+        this.tabReview = page.locator('//a[@href= "#tab-reviews"]');
+        this.noReviews = page.locator('//p[@class="stars"]');
+        this.yourRating = page.locator('//span[@role= "group"]');
+        this.yourReview = page.locator('//textarea[@id = "comment"]');
+        this.name = page.locator('//input[@id = "author"]');
+        this.email = page.locator('//input[@id = "email"]');
+        this.checkboxSaveInfo = page.locator('#wp-comment-cookies-consent');
+        this.labelSaveInfo = page.locator('label[for="wp-comment-cookies-consent"]');
+        this.submit = page.locator('#submit');
+        this.reviewSuccess = page.locator('//p[@class = "meta"]');
+
     }
 
     // Phương thức
     async gotoProductDetail(){
         await this.itemProduct.click();
+    }
+
+    async gotoReview(){
+        await this.tabReview.click();
+    }
+
+    async selectRating(rating: number) {
+        await this.yourRating.locator(`.star-${rating}`).click();
+    }
+
+    async writeReview(rating: number, review: string, name: string, email: string) {
+        await this.selectRating(rating);
+        await this.yourReview.fill(review);
+        await this.name.fill(name);
+        await this.email.fill(email);
+        await this.checkboxSaveInfo.check();
+        await this.submit.click();
     }
 
 }
