@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 
-export class Product {
+export class ProductDetailPage {
     page: Page
     itemProduct: Locator
     imgProduct: Locator
