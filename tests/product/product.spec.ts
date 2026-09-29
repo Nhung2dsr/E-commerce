@@ -1,22 +1,18 @@
-import {test, expect} from '@playwright/test'
-import { Product } from '../../src/pages/product.page';
-import { Page } from '@playwright/test';
+import { test } from '../../src/fixtures/product.fixture';
+import { expect, Page } from '@playwright/test';
+import { ProductDetailPage } from '../../src/pages/product.page';
 
 test.describe('Product display', async() => {
     // Pre-condition
-    let page: Page;
-
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-
+    test.beforeEach(async ({ page }) => {
+       
         await test.step('Goto site', async () => {
             await page.goto('https://e-commerce-dev.betterbytesvn.com/');
         });
     });
 
-    test ('PRODUCT_001 - Verify product page hiển thị đúng với thông tin sản phẩm', async() =>{
-        const productPage = new Product(page);
-
+    test ('PRODUCT_001 - Verify product page hiển thị đúng với thông tin sản phẩm', async({ productDetailPage }) =>{
+        
         await test.step('Truy cập trang chi tiết sản phẩm', async() => {
             // Arrange
             const testData = {
@@ -27,48 +23,43 @@ test.describe('Product display', async() => {
             }
 
             // Action
-            await productPage.gotoProductDetail();
+            await productDetailPage.gotoProductDetail();
         
             // Verify trang web hiển thị thành công với đầy đủ ảnh, tiêu đề, mô tả, giá
-            await expect (productPage.imgProduct).toBeVisible();
-            await expect (productPage.titleProduct).toHaveText(testData.ten);
-            await expect (productPage.describeProduct).toHaveText(testData.mota);
-            await expect (productPage.priceGoc).toContainText(testData.giaGoc);
-            await expect (productPage.priceKM).toContainText(testData.giaKM);
+            await expect (productDetailPage.imgProduct).toBeVisible();
+            await expect (productDetailPage.titleProduct).toHaveText(testData.ten);
+            await expect (productDetailPage.describeProduct).toHaveText(testData.mota);
+            await expect (productDetailPage.priceGoc).toContainText(testData.giaGoc);
+            await expect (productDetailPage.priceKM).toContainText(testData.giaKM);
 
             // Verify button thêm vào giỏ hàng enable và có thể thêm sản phẩm vào giỏ hàng
-            await expect (productPage.btnAddCart).toBeEnabled();
+            await expect (productDetailPage.btnAddCart).toBeEnabled();
 
-            await (productPage.btnAddCart).click();
-            await expect (productPage.successMessage).toBeVisible();
+            await (productDetailPage.btnAddCart).click();
+            await expect (productDetailPage.successMessage).toBeVisible();
                        
         });
 
         await test.step('Click sang tab review', async() => {
             // Action
-            productPage.gotoReview();
+            productDetailPage.gotoReview();
 
             // Assertion
-            await expect (productPage.noReviews).toBeVisible();
+            await expect (productDetailPage.noReviews).toBeVisible();
         });
     });
 });
 
 test.describe('Product review hoạt động', async() =>{
     // Pre-condition
-    let page: Page;
 
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-
+    test.beforeEach(async ({ page }) => {
         await test.step('Goto site', async () => {
             await page.goto('https://e-commerce-dev.betterbytesvn.com/');           
         });
     });
 
-    test ('PRODUCT_002 - Verify tính năng product review hoạt động đúng', async({ browser }) =>{
-
-        const productPage = new Product(page);
+    test ('PRODUCT_002 - Verify tính năng product review hoạt động đúng', async({ page, browser, productDetailPage }) =>{
 
         const testData = {
             contentCheckbox: "Save my name, email, and website in this browser for the next time I comment.",
@@ -77,34 +68,34 @@ test.describe('Product review hoạt động', async() =>{
 
         await test.step ('Truy cập trang chi tiết sản phẩm và click sang tab review', async() => {
             // Action
-            productPage.gotoProductDetail();
-            productPage.gotoReview();
+            productDetailPage.gotoProductDetail();
+            productDetailPage.gotoReview();
 
             // Assertion
             // Chưa có review nào
-            await expect (productPage.noReviews).toBeVisible();
+            await expect (productDetailPage.noReviews).toBeVisible();
 
             // Hiển thị form submit review với đầy đủ thông tin
-            await expect (productPage.yourRating).toBeVisible();
+            await expect (productDetailPage.yourRating).toBeVisible();
 
-            await expect (productPage.yourReview).toBeVisible();
+            await expect (productDetailPage.yourReview).toBeVisible();
 
-            await expect (productPage.name).toBeVisible();
+            await expect (productDetailPage.name).toBeVisible();
 
-            await expect (productPage.email).toBeVisible();
+            await expect (productDetailPage.email).toBeVisible();
 
-            await expect (productPage.checkboxSaveInfo).toBeVisible();
+            await expect (productDetailPage.checkboxSaveInfo).toBeVisible();
 
-            await expect (productPage.labelSaveInfo).toHaveText(testData.contentCheckbox);
+            await expect (productDetailPage.labelSaveInfo).toHaveText(testData.contentCheckbox);
 
         });
 
         await test.step('Thực hiện viết review', async() =>{
             // Action
-            await productPage.writeReview(5,'Khóa học chất lượng', 'Phạm Nhung', 'nhung1@gmail.com')
+            await productDetailPage.writeReview(5,'Khóa học chất lượng', 'Phạm Nhung', 'nhung2005@gmail.com')
 
             // Verify thông tin review hiển thị trên trang sản phẩm với dòng text: "Your review is awaiting approval"
-            await expect (productPage.reviewSuccess).toHaveText(testData.verifyText);
+            await expect (productDetailPage.reviewSuccess).toHaveText(testData.verifyText);
         });
 
         await test.step('Refresh trình duyệt hiện tại', async() =>{
@@ -112,7 +103,7 @@ test.describe('Product review hoạt động', async() =>{
             await page.reload();
 
             // Assertion
-            await expect (productPage.reviewSuccess).toHaveText(testData.verifyText);
+            await expect (productDetailPage.reviewSuccess).toHaveText(testData.verifyText);
         });
 
         await test.step('Mở 1 trình duyệt khác, truy cập trang sản phẩm', async() =>{
@@ -120,7 +111,7 @@ test.describe('Product review hoạt động', async() =>{
 
             const newPage = await newContext.newPage();
 
-            const newProductPage = new Product(newPage);
+            const newProductPage = new ProductDetailPage(newPage);
 
             await newPage.goto('https://e-commerce-dev.betterbytesvn.com/product/fullstack-automation-qa-voi-playwright-typescript/');
 
@@ -131,5 +122,3 @@ test.describe('Product review hoạt động', async() =>{
         });
     });   
 });
-
-
